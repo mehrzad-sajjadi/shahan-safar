@@ -1,29 +1,20 @@
 <template>
-    <div class="bg-blue-500 w-[60%] z-10">
-        adsnlasnd
+    <div class="z-10 bg-blue-500 flex justify-center">
+        <CityInput placeholder="مبدا" >
+            <Tackeoff class="absolute  top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+        </CityInput>
+        <button class="bg-gray-200 hover:bg-gray-300 p-2 rounded-full text-gray-600">
+            ↔
+        </button>
+        <CityInput placeholder="مقصد" >
+            <landing class="absolute  top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+        </CityInput>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import PersianDateTimePicker from 'vue3-persian-datetime-picker'
-import CityPicker from './CityInput.vue'
+import CityInput from './CityInput.vue';
+import landing from './Icons/landing.vue';
+import Tackeoff from './Icons/Tackeoff.vue';
 
-const origin = ref('')
-const destination = ref('')
-const flightDates = ref({ start: null, end: null })
-
-const searchFlights = () => {
-  if (origin.value && destination.value && flightDates.value.start && flightDates.value.end) {
-    console.log('جستجو:', {
-      origin: origin.value,
-      destination: destination.value,
-      dates: flightDates.value
-    })
-    // اینجا API کال برای گرفتن پروازها
-  } else {
-    alert('لطفاً تمام فیلدها را پر کنید')
-  }
-}
 </script>
-
