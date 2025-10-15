@@ -19,14 +19,12 @@
                 </div>
             </div>
 
-            <div class="w-[80%] absolute top-[80%] left-1/2 -translate-x-1/2 bg-red-500 p-4 rounded-lg shadow-lg">
-                <SearchBox />
-            </div>
+            <SearchBox />
         </div>
     </div>
 </template>
 
 <script setup>
-    // Components
-    import SearchBox from '~/components/SearchBox.vue';
+// Components
+import SearchBox from '~/components/SearchBox.vue';
 </script>
