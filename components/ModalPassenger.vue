@@ -1,11 +1,11 @@
 <template>
     <div
-        class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm p-4 sm:p-6 flex items-center justify-center"
-        role="dialog"
-        aria-modal="true"
-        dir="rtl"
+        class="fixed inset-0 z-50 sm:p-6 flex items-center justify-center"
     >
-        <div class="w-full max-w-md bg-white text-black rounded-2xl shadow-xl overflow-hidden">
+        <div
+            ref="checkOut"
+            class="w-full max-w-md bg-white text-black rounded-2xl shadow-xl overflow-hidden"
+        >
             <div class="p-4 sm:p-6 space-y-4">
 
                 <!-- Rows -->
@@ -19,15 +19,16 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button
-                                @click="decrease('bozorgh')"
-                                :disabled="pasengerNums.bozorgh==1"
-                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-                            >-</button>
-                            <span class="w-8 text-center font-medium text-slate-800">{{ pasengerNums.bozorgh }}</span>
-                            <button
                                 @click="increase('bozorgh')"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700"
                             >+</button>
+
+                            <span class="w-8 text-center font-medium text-slate-800">{{ pasengerNums.bozorgh }}</span>
+                            <button
+                                @click="decrease('bozorgh')"
+                                :disabled="pasengerNums.bozorgh==1"
+                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                            >-</button>                        
                         </div>
                     </div>
 
@@ -39,15 +40,18 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button
+                                @click="increase('koodak')"
+                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                            >+</button>
+                            <span class="w-8 text-center font-medium text-slate-800">
+                                {{ pasengerNums.koodak }}
+                            </span>
+                            <button
                                 @click="decrease('koodak')"
                                 :disabled="pasengerNums.koodak==0"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
-                            <span class="w-8 text-center font-medium text-slate-800">{{ pasengerNums.koodak }}</span>
-                            <button
-                                @click="increase('koodak')"
-                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700"
-                            >+</button>
+
                         </div>
                     </div>
 
@@ -80,6 +84,7 @@
                 <!-- Footer -->
                 <div class="border-t border-slate-200 pt-4">
                     <button
+                        @click="sendEmit"
                         class="w-full py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
                     >
                         تایید - {{ sum }} مسافر
@@ -93,6 +98,7 @@
 
 <script setup>
 import { reactive, computed } from "vue";
+import { onClickOutside } from "@vueuse/core";
 
 const pasengerNums = reactive({
   bozorgh: 1,
@@ -101,13 +107,32 @@ const pasengerNums = reactive({
 });
 
 function increase(type) {
-  pasengerNums[type]++;
+    pasengerNums[type]++;
+    emit("emit:passNums",sum.value);
 }
 function decrease(type) {
-  if (pasengerNums[type] > 0) pasengerNums[type]--;
+    pasengerNums[type]--;
+    emit("emit:passNums",sum.value);
 }
 
 const sum = computed(() => {
-  return pasengerNums.bozorgh + pasengerNums.koodak + pasengerNums.nozad;
+    return pasengerNums.bozorgh + pasengerNums.koodak + pasengerNums.nozad;
 });
+const emit = defineEmits("emit:passNums","emit:close")
+
+function sendEmit(){
+    emit("emit:passNums",sum.value);
+    emit("emit:close");
+}
+const checkOut = ref(null);
+onClickOutside(checkOut,()=>{
+    emit("emit:close");
+});
+
 </script>
+
+<style scoped>
+button{
+    cursor: pointer;
+}
+</style>
