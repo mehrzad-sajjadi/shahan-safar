@@ -2,7 +2,6 @@
     <div class="relative" ref="root" dir="rtl">
         <!-- Visible field (readonly) -->
         <div class="w-full">
-            <label v-if="label" class="block mb-1 text-sm text-slate-500">{{ label }}</label>
             <div class="relative">
                 <input
                     type="text"
@@ -11,11 +10,10 @@
                     @click="open = !open"
                     :aria-expanded="open ? 'true' : 'false'"
                     aria-haspopup="dialog"
-                    class="w-full h-12 px-4 rounded-lg border border-slate-300 text-right focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                    placeholder="مسافران"
+                    class="w-full  h-12 px-4 rounded-lg border border-slate-300 text-right focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 />
                 <!-- ارسال فقط عدد به سرور -->
-                <input type="hidden" :name="name" :value="modelValue" />
+                <input type="hidden" :value="modelValue" />
                 <!-- آیکن -->
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">👤</span>
             </div>
@@ -43,16 +41,15 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button
+                                @click="increase('adult')"
+                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                            >+</button>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.adult }}</span>
+                            <button
                                 @click="decrease('adult')"
                                 :disabled="counts.adult <= minAdult"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
-                            <span class="w-8 text-center font-medium text-slate-800">{{ toFa(counts.adult) }}</span>
-                            <button
-                                @click="increase('adult')"
-                                :disabled="total >= maxPassengers"
-                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-                            >+</button>
                         </div>
                     </div>
 
@@ -64,16 +61,15 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button
+                                @click="increase('child')"
+                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                            >+</button>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.child }}</span>
+                            <button
                                 @click="decrease('child')"
                                 :disabled="counts.child === 0"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
-                            <span class="w-8 text-center font-medium text-slate-800">{{ toFa(counts.child) }}</span>
-                            <button
-                                @click="increase('child')"
-                                :disabled="total >= maxPassengers"
-                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-                            >+</button>
                         </div>
                     </div>
 
@@ -85,16 +81,17 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button
+                                @click="increase('infant')"
+                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                            >+</button>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.infant }}</span>
+
+                            <button
                                 @click="decrease('infant')"
                                 :disabled="counts.infant === 0"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
-                            <span class="w-8 text-center font-medium text-slate-800">{{ toFa(counts.infant) }}</span>
-                            <button
-                                @click="increase('infant')"
-                                :disabled="total >= maxPassengers || counts.infant + 1 > counts.adult"
-                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-                            >+</button>
+                        
                         </div>
                     </div>
                 </div>
@@ -104,7 +101,7 @@
                         @click="closeDropdown"
                         class="w-full py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
                     >
-                        تایید - {{ toFa(total) }} مسافر
+                        تایید - {{ total }} مسافر
                     </button>
                 </div>
             </div>
@@ -113,47 +110,45 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
-import { onClickOutside, useEventListener } from '@vueuse/core'
+import { ref, reactive, computed, watch } from 'vue'
+import { onClickOutside } from '@vueuse/core'
 
 const props = defineProps({
-    modelValue: { type: Number, default: 1 }, // فقط عدد کل
-    name: { type: String, default: 'passengers' }, // برای فرم (hidden input)
-    label: { type: String, default: '' },
     minAdult: { type: Number, default: 1 },
-    maxPassengers: { type: Number, default: 9 }
 })
-const emit = defineEmits(['update:modelValue', 'change']) // change: ارسال جزئیات انتخاب
 
-const root = ref(null)
-const open = ref(false)
+const emit = defineEmits(['update:modelValue', 'change']);
+
+const root = ref(null);
+const open = ref(false);
 
 const counts = reactive({
-    adult: Math.max(props.minAdult, Math.min(props.modelValue || 1, props.maxPassengers)),
+    adult: 1,
     child: 0,
     infant: 0
 })
 
 const total = computed(() => counts.adult + counts.child + counts.infant)
-const display = computed(() => `${toFa(total.value)} مسافر`)
+const display = computed(() => `${total.value} مسافر`)
 
 const breakdownLabel = computed(() => {
     const parts = []
-    if (counts.adult) parts.push(`${toFa(counts.adult)} بزرگسال`)
-    if (counts.child) parts.push(`${toFa(counts.child)} کودک`)
-    if (counts.infant) parts.push(`${toFa(counts.infant)} نوزاد`)
-    return parts.length ? parts.join('، ') : `${toFa(total.value)} مسافر`
+    if (counts.adult) parts.push(`${counts.adult} بزرگسال`)
+    if (counts.child) parts.push(`${counts.child} کودک`)
+    if (counts.infant) parts.push(`${counts.infant} نوزاد`)
+    return parts.length ? parts.join('، ') : `${total.value} مسافر`
 })
 
 function increase(type) {
-    if (total.value >= props.maxPassengers) return
     if (type === 'infant' && counts.infant + 1 > counts.adult) return
     counts[type]++
 }
+
 function decrease(type) {
     if (type === 'adult') {
-        if (counts.adult <= props.minAdult) return
-        // اگر کاهش بزرگسال باعث شود تعداد نوزاد > بزرگسال شود، نوزاد را هم کم می‌کنیم
+        if (counts.adult <= props.minAdult){ 
+            return
+        }
         if (counts.infant > counts.adult - 1) {
             counts.infant = counts.adult - 1
         }
@@ -168,21 +163,20 @@ function closeDropdown() {
 }
 
 watch(total, (n) => {
-    emit('update:modelValue', n)               // فقط عدد
-    emit('change', { ...counts, total: n })   // اگر والد بخواهد جزئیات را هم داشته باشد
+    emit('update:modelValue', n)
+    emit('change', { ...counts, total: n })
 }, { immediate: true, deep: true })
 
 onClickOutside(root, () => { open.value = false })
-useEventListener(window, 'keydown', (e) => {
-    if (e.key === 'Escape') open.value = false
-})
 
-function toFa(x) {
-    return String(x).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d])
-}
+
 </script>
 
 <style scoped>
+button{
+    cursor: pointer;
+}
 .fade-enter-active, .fade-leave-active { transition: opacity .15s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
 </style>
