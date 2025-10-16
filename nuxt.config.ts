@@ -9,5 +9,6 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
+  modules: ['@pinia/nuxt'],
   css: ['~/assets/css/main.css']
 })

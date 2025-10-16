@@ -1,214 +1,188 @@
 <template>
-    <div class="relative" dir="rtl" ref="root">
-        <!-- Input فقط برای باز کردن پاپ‌اور -->
-        <input
-            type="text"
-            :value="inputLabel"
-            readonly
-            @click="openPopover"
-            @focus="openPopover"
-            class="w-full px-3 py-2 border rounded-lg cursor-pointer"
-            placeholder="انتخاب مسافر"
-            aria-haspopup="dialog"
-            :aria-expanded="open ? 'true' : 'false'"
-        />
+    <div class="relative" ref="root" dir="rtl">
+        <!-- Visible field (readonly) -->
+        <div class="w-full">
+            <label v-if="label" class="block mb-1 text-sm text-slate-500">{{ label }}</label>
+            <div class="relative">
+                <input
+                    type="text"
+                    :value="display"
+                    readonly
+                    @click="open = !open"
+                    :aria-expanded="open ? 'true' : 'false'"
+                    aria-haspopup="dialog"
+                    class="w-full h-12 px-4 rounded-lg border border-slate-300 text-right focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                    placeholder="مسافران"
+                />
+                <!-- ارسال فقط عدد به سرور -->
+                <input type="hidden" :name="name" :value="modelValue" />
+                <!-- آیکن -->
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">👤</span>
+            </div>
+        </div>
 
-        <!-- Popover: زیر اینپوت -->
-        <div
-            v-if="open"
-            class="absolute right-0 mt-2 w-80 max-w-[90vw] bg-white border rounded-xl shadow-xl z-50"
-            role="dialog"
-            aria-modal="true"
-            @keydown.esc.prevent.stop="onCancel"
-        >
-            <div class="p-4 space-y-3">
-                <!-- بزرگسال -->
-                <div class="flex items-center justify-between">
-                    <div class="text-right">
-                        <div class="font-medium">بزرگسال</div>
-                        <div class="text-sm text-gray-400">(۱۲ سال به بالا)</div>
+        <!-- Dropdown -->
+        <transition name="fade">
+            <div
+                v-if="open"
+                class="absolute z-50 mt-2 right-0 w-80 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden"
+                role="dialog"
+                aria-label="انتخاب تعداد مسافران"
+            >
+                <div class="p-4 space-y-3">
+                    <!-- خلاصه بالا -->
+                    <div class="px-2 py-2 bg-slate-50 rounded-lg text-sm text-slate-600">
+                        {{ breakdownLabel }}
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button
-                            @click="dec('bozorgh')"
-                            :disabled="draft.bozorgh <= minBozorgh"
-                            class="h-8 w-8 grid place-items-center rounded bg-gray-200 disabled:opacity-50"
-                        >-</button>
-                        <span class="w-8 text-center font-medium">{{ fa(draft.bozorgh) }}</span>
-                        <button
-                            @click="inc('bozorgh')"
-                            class="h-8 w-8 grid place-items-center rounded bg-gray-200"
-                        >+</button>
+
+                    <!-- بزرگسال -->
+                    <div class="flex items-center justify-between">
+                        <div class="text-right">
+                            <div class="font-medium text-slate-800">بزرگسال</div>
+                            <div class="text-sm text-slate-400">(۱۲ سال به بالا)</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button
+                                @click="decrease('adult')"
+                                :disabled="counts.adult <= minAdult"
+                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                            >-</button>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ toFa(counts.adult) }}</span>
+                            <button
+                                @click="increase('adult')"
+                                :disabled="total >= maxPassengers"
+                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                            >+</button>
+                        </div>
+                    </div>
+
+                    <!-- کودک -->
+                    <div class="flex items-center justify-between">
+                        <div class="text-right">
+                            <div class="font-medium text-slate-800">کودک</div>
+                            <div class="text-sm text-slate-400">(۲ تا ۱۲ سال)</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button
+                                @click="decrease('child')"
+                                :disabled="counts.child === 0"
+                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                            >-</button>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ toFa(counts.child) }}</span>
+                            <button
+                                @click="increase('child')"
+                                :disabled="total >= maxPassengers"
+                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                            >+</button>
+                        </div>
+                    </div>
+
+                    <!-- نوزاد -->
+                    <div class="flex items-center justify-between">
+                        <div class="text-right">
+                            <div class="font-medium text-slate-800">نوزاد</div>
+                            <div class="text-sm text-slate-400">(۱۰ روز تا ۲ سال)</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button
+                                @click="decrease('infant')"
+                                :disabled="counts.infant === 0"
+                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                            >-</button>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ toFa(counts.infant) }}</span>
+                            <button
+                                @click="increase('infant')"
+                                :disabled="total >= maxPassengers || counts.infant + 1 > counts.adult"
+                                class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                            >+</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- کودک -->
-                <div class="flex items-center justify-between">
-                    <div class="text-right">
-                        <div class="font-medium">کودک</div>
-                        <div class="text-sm text-gray-400">(۲ تا ۱۲ سال)</div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button
-                            @click="dec('koodak')"
-                            :disabled="draft.koodak <= 0"
-                            class="h-8 w-8 grid place-items-center rounded bg-gray-200 disabled:opacity-50"
-                        >-</button>
-                        <span class="w-8 text-center font-medium">{{ fa(draft.koodak) }}</span>
-                        <button
-                            @click="inc('koodak')"
-                            class="h-8 w-8 grid place-items-center rounded bg-gray-200"
-                        >+</button>
-                    </div>
-                </div>
-
-                <!-- نوزاد -->
-                <div class="flex items-center justify-between">
-                    <div class="text-right">
-                        <div class="font-medium">نوزاد</div>
-                        <div class="text-sm text-gray-400">(۱۰ روز تا ۲ سال)</div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button
-                            @click="dec('nozad')"
-                            :disabled="draft.nozad <= 0"
-                            class="h-8 w-8 grid place-items-center rounded bg-gray-200 disabled:opacity-50"
-                        >-</button>
-                        <span class="w-8 text-center font-medium">{{ fa(draft.nozad) }}</span>
-                        <button
-                            @click="inc('nozad')"
-                            :disabled="draft.nozad >= draft.bozorgh"
-                            class="h-8 w-8 grid place-items-center rounded bg-gray-200 disabled:opacity-50"
-                        >+</button>
-                    </div>
-                </div>
-
-                <!-- Footer -->
-                <div class="pt-3 border-t">
+                <div class="border-t border-slate-200 p-4">
                     <button
-                        class="w-full py-2 rounded-lg bg-blue-600 text-white"
-                        @click="onConfirm"
+                        @click="closeDropdown"
+                        class="w-full py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
                     >
-                        تایید - {{ fa(draftTotal) }} مسافر
+                        تایید - {{ toFa(total) }} مسافر
                     </button>
                 </div>
             </div>
-        </div>
+        </transition>
     </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue'
-import { onClickOutside } from '@vueuse/core'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { onClickOutside, useEventListener } from '@vueuse/core'
 
 const props = defineProps({
-    modelValue: { type: Number, default: 1 }, // v-model: مجموع
-    initialPassengers: {
-        type: Object,
-        default: () => ({ bozorgh: 1, koodak: 0, nozad: 0 })
-    },
-    labelMode: {
-        type: String,
-        default: 'breakdown', // 'breakdown' | 'total'
-        validator: v => ['breakdown', 'total'].includes(v)
-    },
-    minBozorgh: { type: Number, default: 1 }
+    modelValue: { type: Number, default: 1 }, // فقط عدد کل
+    name: { type: String, default: 'passengers' }, // برای فرم (hidden input)
+    label: { type: String, default: '' },
+    minAdult: { type: Number, default: 1 },
+    maxPassengers: { type: Number, default: 9 }
 })
+const emit = defineEmits(['update:modelValue', 'change']) // change: ارسال جزئیات انتخاب
 
-const emit = defineEmits(['update:modelValue', 'update:passengers', 'confirm'])
-
-const open = ref(false)
 const root = ref(null)
+const open = ref(false)
 
-// وضعیت تاییدشده (درون input نمایش داده می‌شود)
-const passengers = reactive({
-    bozorgh: props.initialPassengers.bozorgh ?? 1,
-    koodak: props.initialPassengers.koodak ?? 0,
-    nozad: props.initialPassengers.nozad ?? 0
+const counts = reactive({
+    adult: Math.max(props.minAdult, Math.min(props.modelValue || 1, props.maxPassengers)),
+    child: 0,
+    infant: 0
 })
 
-// پیش‌نویس برای ویرایش داخل پاپ‌اور
-const draft = reactive({ ...passengers })
+const total = computed(() => counts.adult + counts.child + counts.infant)
+const display = computed(() => `${toFa(total.value)} مسافر`)
 
-watch(
-    () => props.initialPassengers,
-    (val) => {
-        if (!val) return
-        passengers.bozorgh = val.bozorgh ?? passengers.bozorgh
-        passengers.koodak = val.koodak ?? passengers.koodak
-        passengers.nozad = val.nozad ?? passengers.nozad
-        // هم‌گام‌سازی پیش‌نویس وقتی بسته است
-        if (!open.value) {
-            draft.bozorgh = passengers.bozorgh
-            draft.koodak = passengers.koodak
-            draft.nozad = passengers.nozad
-        }
-    },
-    { deep: true }
-)
-
-const draftTotal = computed(() => draft.bozorgh + draft.koodak + draft.nozad)
-const committedTotal = computed(() => passengers.bozorgh + passengers.koodak + passengers.nozad)
-
-const nf = new Intl.NumberFormat('fa-IR')
-const fa = (n) => nf.format(n)
-
-// لیبل برای input
 const breakdownLabel = computed(() => {
     const parts = []
-    if (passengers.bozorgh) parts.push(`${fa(passengers.bozorgh)} بزرگسال`)
-    if (passengers.koodak) parts.push(`${fa(passengers.koodak)} کودک`)
-    if (passengers.nozad) parts.push(`${fa(passengers.nozad)} نوزاد`)
-    return parts.length ? parts.join('، ') : 'انتخاب مسافر'
+    if (counts.adult) parts.push(`${toFa(counts.adult)} بزرگسال`)
+    if (counts.child) parts.push(`${toFa(counts.child)} کودک`)
+    if (counts.infant) parts.push(`${toFa(counts.infant)} نوزاد`)
+    return parts.length ? parts.join('، ') : `${toFa(total.value)} مسافر`
 })
-const totalLabel = computed(() => `${fa(committedTotal.value)} مسافر`)
-const inputLabel = computed(() => (props.labelMode === 'total' ? totalLabel.value : breakdownLabel.value))
 
-function openPopover() {
-    // کپی به پیش‌نویس
-    draft.bozorgh = passengers.bozorgh
-    draft.koodak = passengers.koodak
-    draft.nozad = passengers.nozad
-    open.value = true
+function increase(type) {
+    if (total.value >= props.maxPassengers) return
+    if (type === 'infant' && counts.infant + 1 > counts.adult) return
+    counts[type]++
+}
+function decrease(type) {
+    if (type === 'adult') {
+        if (counts.adult <= props.minAdult) return
+        // اگر کاهش بزرگسال باعث شود تعداد نوزاد > بزرگسال شود، نوزاد را هم کم می‌کنیم
+        if (counts.infant > counts.adult - 1) {
+            counts.infant = counts.adult - 1
+        }
+    } else {
+        if (counts[type] === 0) return
+    }
+    counts[type]--
 }
 
-function onCancel() {
+function closeDropdown() {
     open.value = false
 }
 
-function onConfirm() {
-    // انتقال از پیش‌نویس به وضعیت تاییدشده
-    passengers.bozorgh = draft.bozorgh
-    passengers.koodak = draft.koodak
-    passengers.nozad = draft.nozad
+watch(total, (n) => {
+    emit('update:modelValue', n)               // فقط عدد
+    emit('change', { ...counts, total: n })   // اگر والد بخواهد جزئیات را هم داشته باشد
+}, { immediate: true, deep: true })
 
-    emit('update:modelValue', draftTotal.value)
-    emit('update:passengers', { ...passengers })
-    emit('confirm', { passengers: { ...passengers }, total: draftTotal.value })
-
-    open.value = false
-}
-
-function inc(type) {
-    if (type === 'nozad') {
-        if (draft.nozad >= draft.bozorgh) return
-    }
-    draft[type]++
-}
-
-function dec(type) {
-    if (type === 'bozorgh') {
-        if (draft.bozorgh <= props.minBozorgh) return
-        draft.bozorgh--
-        if (draft.nozad > draft.bozorgh) draft.nozad = draft.bozorgh
-        return
-    }
-    if (draft[type] <= 0) return
-    draft[type]--
-}
-
-// بستن با کلیک بیرون
-onClickOutside(root, () => {
-    if (open.value) onCancel()
+onClickOutside(root, () => { open.value = false })
+useEventListener(window, 'keydown', (e) => {
+    if (e.key === 'Escape') open.value = false
 })
+
+function toFa(x) {
+    return String(x).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d])
+}
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity .15s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>

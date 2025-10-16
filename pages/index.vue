@@ -27,4 +27,10 @@
 <script setup>
 // Components
 import SearchBox from '~/components/SearchBox.vue';
+import { usePassengerStore } from '~/stores/PassengerStore';
+
+const pinia = usePassengerStore();
+
+console.log(pinia.passInfo);
+
 </script>
