@@ -17,18 +17,24 @@
                 v-model="passengerCount"
             />
 
-            <button class="h-full bg-amber-400 px-4 py-2 rounded">جستجو</button>
+            <button @click="search" class="h-full bg-amber-400 px-4 py-2 rounded">جستجو</button>
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import CityInput from './CityInput.vue'
 import landing from './Icons/landing.vue'
 import Tackeoff from './Icons/Tackeoff.vue'
 import DatePicker from 'vue3-persian-datetime-picker'
 import PassengersInput from './PassengersInput.vue'
 
-const passengerCount = ref(1) // این همیشه عدد خالص است
+const passengerCount = ref(1) 
+const router = useRouter();
+
+function search(){
+    router.push("/fly-list");
+}
 </script>
