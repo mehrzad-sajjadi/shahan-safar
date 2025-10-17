@@ -23,15 +23,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import CityInput from './CityInput.vue'
-import landing from './Icons/landing.vue'
-import Tackeoff from './Icons/Tackeoff.vue'
-import DatePicker from 'vue3-persian-datetime-picker'
-import PassengersInput from './PassengersInput.vue'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import CityInput from './CityInput.vue';
+import landing from './Icons/landing.vue';
+import Tackeoff from './Icons/Tackeoff.vue';
+import DatePicker from 'vue3-persian-datetime-picker';
+import PassengersInput from './PassengersInput.vue';
 
-const passengerCount = ref(1) 
+const passengerCount = ref(1);
 const router = useRouter();
 
 function search(){
