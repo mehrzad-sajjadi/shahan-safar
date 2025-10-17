@@ -1,10 +1,16 @@
 <template>
     <div class="w-[80%] absolute top-[80%] left-1/2 -translate-x-1/2 bg-white border border-black p-4 rounded-lg shadow-lg">
         <div class="flex justify-center min-h-min items-center gap-2">
-            <CityInput placeholder="مبدا">
+            <CityInput 
+                :cities="data.data"
+                placeholder="مبدا"
+            >
                 <Tackeoff class="absolute top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
             </CityInput>
-            <CityInput placeholder="مقصد">
+            <CityInput
+                :cities="data.data" 
+                placeholder="مقصد"
+            >
                 <landing class="absolute top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
             </CityInput>
 
@@ -37,4 +43,9 @@ const router = useRouter();
 function search(){
     router.push("/fly-list");
 }
+
+const { data } = await useFetch('/api/cities');
+
+console.log(typeof data.value.data);
+
 </script>
