@@ -12,9 +12,7 @@
                     aria-haspopup="dialog"
                     class="w-full  h-12 px-4 rounded-lg border border-slate-300 text-right focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 />
-                <!-- ارسال فقط عدد به سرور -->
                 <input type="hidden" :value="modelValue" />
-                <!-- آیکن -->
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">👤</span>
             </div>
         </div>
@@ -41,13 +39,13 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button
-                                @click="increase('adult')"
+                                @click="increase('adl')"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >+</button>
-                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.adult }}</span>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.adl }}</span>
                             <button
                                 @click="decrease('adult')"
-                                :disabled="counts.adult <= minAdult"
+                                :disabled="counts.adl <= minAdult"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
                         </div>
@@ -61,13 +59,13 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button
-                                @click="increase('child')"
+                                @click="increase('chd')"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >+</button>
-                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.child }}</span>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.chd }}</span>
                             <button
-                                @click="decrease('child')"
-                                :disabled="counts.child === 0"
+                                @click="decrease('chd')"
+                                :disabled="counts.chd === 0"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
                         </div>
@@ -81,14 +79,14 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button
-                                @click="increase('infant')"
+                                @click="increase('inf')"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >+</button>
-                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.infant }}</span>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.inf }}</span>
 
                             <button
-                                @click="decrease('infant')"
-                                :disabled="counts.infant === 0"
+                                @click="decrease('inf')"
+                                :disabled="counts.inf === 0"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
                         
@@ -123,24 +121,26 @@ const root = ref(null);
 const open = ref(false);
 
 const counts = reactive({
-    adult: 1,
-    child: 0,
-    infant: 0
+    adl: 1,
+    chd: 0,
+    inf: 0
 })
 
-const total = computed(() => counts.adult + counts.child + counts.infant)
+const total = computed(() => counts.adl + counts.chd + counts.inf)
 const display = computed(() => `${total.value} مسافر`)
 
 const breakdownLabel = computed(() => {
     const parts = []
-    if (counts.adult) parts.push(`${counts.adult} بزرگسال`)
-    if (counts.child) parts.push(`${counts.child} کودک`)
-    if (counts.infant) parts.push(`${counts.infant} نوزاد`)
+    if (counts.adl) parts.push(`${counts.adl} بزرگسال`)
+    if (counts.chd) parts.push(`${counts.chd} کودک`)
+    if (counts.inf) parts.push(`${counts.inf} نوزاد`)
     return parts.length ? parts.join('، ') : `${total.value} مسافر`
 })
 
 function increase(type) {
-    if (type === 'infant' && counts.infant + 1 > counts.adult) return
+    if (type === 'inf' && counts.inf + 1 > counts.adult){
+        return;
+    }
     counts[type]++
 }
 
@@ -149,13 +149,13 @@ function decrease(type) {
         if (counts.adult <= props.minAdult){ 
             return
         }
-        if (counts.infant > counts.adult - 1) {
-            counts.infant = counts.adult - 1
+        if (counts.inf > counts.adult - 1) {
+            counts.inf = counts.adult - 1
         }
     } else {
         if (counts[type] === 0) return
     }
-    counts[type]--
+    counts[type]--; 
 }
 
 function closeDropdown() {

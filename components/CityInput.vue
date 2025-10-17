@@ -23,7 +23,7 @@ import { ref, defineExpose } from 'vue';
 
 const props = defineProps({
     placeholder: { type: String },
-    cities: { type: Array, default: () => [] } // بهتره Array باشه
+    cities: { type: Array, default: () => [] } 
 });
 const emit = defineEmits(['emit:city']);
 
