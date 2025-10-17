@@ -1,0 +1,50 @@
+{
+    "origin": "THR",
+    "destination": "MHD",
+    "date": "2025-10-23",
+    "return_date": "",
+    "passengers": [
+        {
+            "type": "adl",
+            "name": "",
+            "family": "",
+            "fa_name": "",
+            "fa_family": "",
+            "gender": 1,
+            "nid": "",
+            "passport_number": "",
+            "birthday": "",
+            "nationality": "IRN",
+            "passport_nationality": "",
+            "passport_expire": ""
+        },
+        {
+            "type": "adl",
+            "name": "",
+            "family": "",
+            "fa_name": "",
+            "fa_family": "",
+            "gender": 1,
+            "nid": "",
+            "passport_number": "",
+            "birthday": "",
+            "nationality": "IRN",
+            "passport_nationality": "",
+            "passport_expire": ""
+        },
+        {
+            "type": "inf",
+            "name": "",
+            "family": "",
+            "fa_name": "",
+            "fa_family": "",
+            "gender": 1,
+            "nid": "",
+            "passport_number": "",
+            "birthday": "",
+            "nationality": "IRN",
+            "passport_nationality": "",
+            "passport_expire": ""
+        }
+    ]
+}
