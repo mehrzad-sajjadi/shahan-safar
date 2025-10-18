@@ -25,7 +25,7 @@
 
                 <PassengersInput @change="updatePassengers" />
 
-                <button @click="submit" class="h-full bg-amber-400 px-4 py-2 rounded">جستجو</button>
+                <button type="submit" class="cursor-pointer h-full bg-amber-400 px-4 py-2 rounded">جستجو</button>
             </div>
         </form>
 
@@ -44,9 +44,8 @@ import Tackeoff from './Icons/Tackeoff.vue';
 
 const router = useRouter();
 
-function search(){
-    router.push("/fly-list");
-}
+
+
 
 const { data } = await useFetch('/api/cities');
 
@@ -132,7 +131,12 @@ watch(date, (newValue) => {
     body.date = newValue;
 });
 
+import { useFlightsStore } from '~/stores/flights'; 
+const flightsStore = useFlightsStore();
+
+
 const result = ref(null);
+
 
 const fetchFlights = async () => {
     result.value = null;
@@ -142,6 +146,8 @@ const fetchFlights = async () => {
             body
         });
         result.value = res;
+        flightsStore.setFlights(res.data); // فقط ذخیره flights در استور
+        router.push('/fly-list'); 
         console.log(result.value);
     } catch (err) {
         throw new Error(err);
