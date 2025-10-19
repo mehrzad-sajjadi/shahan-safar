@@ -15,6 +15,8 @@
                 :plane_name="flightsStore.flights.trip.plane_name"
                 :capacity="flightsStore.flights.trip.capacity"
                 :type="flightsStore.flights.trip.type"
+                :flight_number="flightsStore.flights.trip.flight_number"
+                :price_details="flightsStore.flights.trip.price_details"
             />
         </div>
 

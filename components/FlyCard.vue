@@ -81,21 +81,21 @@
                     <div class="w-full">
                         <div class="text-sm">
                             <p class="flex flex-row  justify-between p-3 mb-1">
-                                <span class="">بزرگسال 2X</span>
-                                <span class="">۳٬۴۷۷٬۸۶۰ تومان</span>
+                                <span class="">بزرگسال {{store.counts.adl}}X</span>
+                                <span class="">{{price_details.adult.price}}  تومان</span>
                             </p>
-                            <p class="flex flex-row  justify-between p-3 mb-1">
-                                <span class="">کودک 1X</span>
-                                <span class="">۳٬۴۷۷٬۸۶۰ تومان</span>
+                            <p v-if="store.counts.chd"  class="flex flex-row  justify-between p-3 mb-1">
+                                <span class="">کودک {{store.counts.chd}}X</span>
+                                <span class="">{{price_details.child.price}} تومان</span>
                             </p>
-                            <p class="flex flex-row  justify-between p-3">
-                                <span class="">نوزاد 1X</span>
-                                <span class="">۳٬۴۷۷٬۸۶۰ تومان</span>
+                            <p v-if="store.counts.inf" class="flex flex-row  justify-between p-3">
+                                <span class="">نوزاد {{store.counts.inf}}X</span>
+                                <span class="">{{price_details.infant.price}} تومان</span>
                             </p>
                         </div>
                         <p class="flex flex-row  text-md font-bold justify-between p-3">
                             <span class="">مجموع</span>
-                            <span class="">۳٬۴۷۷٬۸۶۰ تومان</span>
+                            <span class="">{{ totalPrice }} تومان</span>
                         </p>
                     </div>
                     <div class="mt-auto w-full  p-3">
@@ -119,6 +119,12 @@ import FlightInfo from './FlightInfo.vue';
 import FlyLogo from './Icons/FlyLogo.vue';
 import Modal from '~/components/Modal.vue';
 
+import { usePassengerStore } from '@/stores/PassengerStore';
+import { computed } from 'vue';
+// استفاده از store
+const store = usePassengerStore()
+
+
 
 const props = defineProps({
     price: { type: Number}, 
@@ -130,13 +136,20 @@ const props = defineProps({
     time: { type: String},//زمان پرواز
     capacity:{type:Number},//ظرفیت
     type:{type:Object},//چارتری
-    plane_name:{type:String}//M82
+    plane_name:{type:String},//M82
+    flight_number:{type:String},
+    price_details:{type:Object}
 });
 
-
+const totalPrice = computed(() => {
+    const adultPrice = store.counts.adl * props.price_details.adult.price;
+    const childPrice = store.counts.chd * props.price_details.child.price;
+    const infantPrice = store.counts.inf * props.price_details.infant.price;
+    return adultPrice + childPrice + infantPrice;
+});
 
 const flightInfo = [
-    { label: 'شماره پرواز', value: props.airline.id },
+    { label: 'شماره پرواز', value: props.flight_number },
     { label: 'نوع بلیط', value: props.type.fa_name },
     { label: 'شماره ترمینال', value: '-' },
     { label: 'مقدار بار مجاز', value: "20کیلو" },

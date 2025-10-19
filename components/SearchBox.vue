@@ -62,6 +62,12 @@ import Tackeoff from './Icons/Tackeoff.vue';
 
 const router = useRouter();
 
+//دریافت تاریخ کنونی به فارسی
+let currentTime = Date.now();
+let dateFormat = new Intl.DateTimeFormat("fa-IR-u-nu-latn").format(currentTime);
+const currentDate = ref(dateFormat);
+console.log(currentDate.value);
+
 const { data } = await useFetch('/api/cities');
 
 const origin = ref('');

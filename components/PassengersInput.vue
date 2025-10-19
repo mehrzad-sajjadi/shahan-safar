@@ -9,7 +9,7 @@
                     @click="open = !open"
                     :aria-expanded="open ? 'true' : 'false'"
                     aria-haspopup="dialog"
-                    class="w-full  h-12 px-4 rounded-lg border border-slate-300 text-right focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                    class="w-full h-12 px-4 rounded-lg border border-slate-300 text-right focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 />
                 <input type="hidden" :value="modelValue" />
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">👤</span>
@@ -25,7 +25,7 @@
             >
                 <div class="p-4 space-y-3">
                     <div class="px-2 py-2 bg-slate-50 rounded-lg text-sm text-slate-600">
-                        {{ breakdownLabel }}
+                        {{ store.breakdownLabel }}
                     </div>
 
                     <!-- بزرگسال -->
@@ -37,14 +37,14 @@
                         <div class="flex items-center gap-2">
                             <button
                                 type="button"
-                                @click="increase('adl')"
+                                @click="store.increase('adl')"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >+</button>
-                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.adl }}</span>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ store.counts.adl }}</span>
                             <button
                                 type="button"
-                                @click="decrease('adl')"
-                                :disabled="counts.adl <= minAdult"
+                                @click="store.decrease('adl')"
+                                :disabled="store.counts.adl <= minAdult"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
                         </div>
@@ -59,14 +59,14 @@
                         <div class="flex items-center gap-2">
                             <button
                                 type="button"
-                                @click="increase('chd')"
+                                @click="store.increase('chd')"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >+</button>
-                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.chd }}</span>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ store.counts.chd }}</span>
                             <button
                                 type="button"
-                                @click="decrease('chd')"
-                                :disabled="counts.chd === 0"
+                                @click="store.decrease('chd')"
+                                :disabled="store.counts.chd === 0"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
                         </div>
@@ -81,14 +81,14 @@
                         <div class="flex items-center gap-2">
                             <button
                                 type="button"
-                                @click="increase('inf')"
+                                @click="store.increase('inf')"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >+</button>
-                            <span class="w-8 text-center font-medium text-slate-800">{{ counts.inf }}</span>
+                            <span class="w-8 text-center font-medium text-slate-800">{{ store.counts.inf }}</span>
                             <button
                                 type="button"
-                                @click="decrease('inf')"
-                                :disabled="counts.inf === 0"
+                                @click="store.decrease('inf')"
+                                :disabled="store.counts.inf === 0"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
                         </div>
@@ -101,7 +101,7 @@
                         @click="closeDropdown"
                         class="w-full py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
                     >
-                        تایید - {{ total }} مسافر
+                        تایید - {{ store.total }} مسافر
                     </button>
                 </div>
             </div>
@@ -110,71 +110,49 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { onClickOutside } from '@vueuse/core'
+import { usePassengerStore } from '@/stores/PassengerStore' 
 
 const props = defineProps({
     minAdult: { type: Number, default: 1 },
-    modelValue: { type: [Number, String], default: '' }
+    modelValue: { type: [Number, String] }
 })
 
-const emit = defineEmits(['update:modelValue', 'change']);
+const emit = defineEmits(['update:modelValue', 'change'])
 
-const root = ref(null);
-const open = ref(false);
+const root = ref(null)
+const open = ref(false)
 
-const counts = reactive({
-    adl: 1,
-    chd: 0,
-    inf: 0
-})
 
-const total = computed(() => counts.adl + counts.chd + counts.inf)
-const display = computed(() => `${total.value} مسافر`)
+const store = usePassengerStore()
 
-const breakdownLabel = computed(() => {
-    const parts = []
-    if (counts.adl) parts.push(`${counts.adl} بزرگسال`)
-    if (counts.chd) parts.push(`${counts.chd} کودک`)
-    if (counts.inf) parts.push(`${counts.inf} نوزاد`)
-    return parts.length ? parts.join('، ') : `${total.value} مسافر`
-})
 
-function increase(type) {
-    if (type === 'inf' && counts.inf + 1 > counts.adl) {
-        return
+const display = computed(() => `${store.total} مسافر`)
+
+watch(() => props.modelValue, (newVal) => {
+    if (newVal && typeof newVal === 'number') {
+        store.setCounts({ adl: newVal, chd: 0, inf: 0 })
     }
-    counts[type]++
-}
-
-function decrease(type) {
-    if (type === 'adl') {
-        if (counts.adl <= props.minAdult) {
-            return
-        }
-        if (counts.inf > counts.adl - 1) {
-            counts.inf = counts.adl - 1
-        }
-    } else {
-        if (counts[type] === 0) return
-    }
-    counts[type]--
-}
+}, { immediate: true })
 
 function closeDropdown() {
+    store.setCounts({
+        adl: store.counts.adl, 
+        chd: store.counts.chd,
+        inf: store.counts.inf
+    })
+    emit('update:modelValue', store.total)
+    emit('change', { ...store.counts, total: store.total })
+    
     open.value = false
 }
-
-watch(total, (n) => {
-    emit('update:modelValue', n)
-    emit('change', { ...counts, total: n })
-}, { immediate: true })
 
 onClickOutside(root, () => { open.value = false })
 </script>
 
 <style scoped>
-button{
+button {
     cursor: pointer;
 }
 .fade-enter-active, .fade-leave-active { transition: opacity .15s ease; }
