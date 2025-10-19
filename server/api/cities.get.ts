@@ -10,8 +10,6 @@ const cities: City[] = [
     { code: 'AWZ', fa: 'اهواز', en: 'Ahvaz' },
     { code: 'KIH', fa: 'کیش', en: 'Kish' },
     { code: 'GSM', fa: 'قشم', en: 'Qeshm' },
-    { code: 'KER', fa: 'کرمان', en: 'Kerman' },
-    { code: 'KSH', fa: 'کرمانشاه', en: 'Kermanshah' },
     { code: 'AZD', fa: 'یزد', en: 'Yazd' },
     { code: 'BND', fa: 'بندرعباس', en: 'Bandar Abbas' },
     { code: 'RAS', fa: 'رشت', en: 'Rasht' },

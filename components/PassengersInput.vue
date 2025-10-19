@@ -1,6 +1,5 @@
 <template>
     <div class="relative" ref="root" dir="rtl">
-        <!-- Visible field (readonly) -->
         <div class="w-full">
             <div class="relative">
                 <input
@@ -17,7 +16,6 @@
             </div>
         </div>
 
-        <!-- Dropdown -->
         <transition name="fade">
             <div
                 v-if="open"
@@ -26,7 +24,6 @@
                 aria-label="انتخاب تعداد مسافران"
             >
                 <div class="p-4 space-y-3">
-                    <!-- خلاصه بالا -->
                     <div class="px-2 py-2 bg-slate-50 rounded-lg text-sm text-slate-600">
                         {{ breakdownLabel }}
                     </div>
@@ -39,12 +36,14 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button
+                                type="button"
                                 @click="increase('adl')"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >+</button>
                             <span class="w-8 text-center font-medium text-slate-800">{{ counts.adl }}</span>
                             <button
-                                @click="decrease('adult')"
+                                type="button"
+                                @click="decrease('adl')"
                                 :disabled="counts.adl <= minAdult"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
@@ -59,11 +58,13 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button
+                                type="button"
                                 @click="increase('chd')"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >+</button>
                             <span class="w-8 text-center font-medium text-slate-800">{{ counts.chd }}</span>
                             <button
+                                type="button"
                                 @click="decrease('chd')"
                                 :disabled="counts.chd === 0"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
@@ -79,23 +80,24 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button
+                                type="button"
                                 @click="increase('inf')"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >+</button>
                             <span class="w-8 text-center font-medium text-slate-800">{{ counts.inf }}</span>
-
                             <button
+                                type="button"
                                 @click="decrease('inf')"
                                 :disabled="counts.inf === 0"
                                 class="h-9 w-9 grid place-items-center rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                             >-</button>
-                        
                         </div>
                     </div>
                 </div>
 
                 <div class="border-t border-slate-200 p-4">
                     <button
+                        type="button"
                         @click="closeDropdown"
                         class="w-full py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
                     >
@@ -113,6 +115,7 @@ import { onClickOutside } from '@vueuse/core'
 
 const props = defineProps({
     minAdult: { type: Number, default: 1 },
+    modelValue: { type: [Number, String], default: '' }
 })
 
 const emit = defineEmits(['update:modelValue', 'change']);
@@ -138,24 +141,24 @@ const breakdownLabel = computed(() => {
 })
 
 function increase(type) {
-    if (type === 'inf' && counts.inf + 1 > counts.adult){
-        return;
+    if (type === 'inf' && counts.inf + 1 > counts.adl) {
+        return
     }
     counts[type]++
 }
 
 function decrease(type) {
-    if (type === 'adult') {
-        if (counts.adult <= props.minAdult){ 
+    if (type === 'adl') {
+        if (counts.adl <= props.minAdult) {
             return
         }
-        if (counts.inf > counts.adult - 1) {
-            counts.inf = counts.adult - 1
+        if (counts.inf > counts.adl - 1) {
+            counts.inf = counts.adl - 1
         }
     } else {
         if (counts[type] === 0) return
     }
-    counts[type]--; 
+    counts[type]--
 }
 
 function closeDropdown() {
@@ -165,11 +168,9 @@ function closeDropdown() {
 watch(total, (n) => {
     emit('update:modelValue', n)
     emit('change', { ...counts, total: n })
-}, { immediate: true, deep: true })
+}, { immediate: true })
 
 onClickOutside(root, () => { open.value = false })
-
-
 </script>
 
 <style scoped>
@@ -178,5 +179,4 @@ button{
 }
 .fade-enter-active, .fade-leave-active { transition: opacity .15s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
-
 </style>

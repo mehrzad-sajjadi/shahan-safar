@@ -9,7 +9,7 @@ export const usePassengerStore = defineStore("passengerStore",()=>{
         nums:45646
     });
 
-    //تغییر مقادیر passInfo
+
     function updateData(newData){
         Object.assign(passInfo,newData)
     }

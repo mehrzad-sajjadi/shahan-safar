@@ -23,5 +23,9 @@
     "vue": "^3.5.22",
     "vue-router": "^4.5.1",
     "vue3-persian-datetime-picker": "^1.2.2"
+  },
+  "devDependencies": {
+    "@iconify-json/bxs": "^1.2.2",
+    "@nuxt/icon": "^2.0.0"
   }
 }

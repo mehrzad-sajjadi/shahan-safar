@@ -1,0 +1,70 @@
+{
+    "price": 7271950,
+    "flights": {
+        "trip": {
+            "origin": {
+                "name": "tehran",
+                "fa_name": "تهران",
+                "iata": "THR",
+                "slug": "tehran",
+                "state": null,
+                "value": null
+            },
+            "destination": {
+                "name": "mashhad",
+                "fa_name": "مشهد",
+                "iata": "MHD",
+                "slug": "mashhad",
+                "state": null,
+                "value": null
+            },
+            "type": {
+                "fa_name": "چارتری",
+                "name": "charter"
+            },
+            "departure": "2025-10-22 05:30",
+            "date": "2025-10-22",
+            "time": "05:30",
+            "arrival": "2025-10-22 06:45",
+            "arrive_date": "2025-10-22",
+            "arrive_time": "06:45",
+            "airline": {
+                "id": 16,
+                "name": "Flypersia",
+                "fa_name": "فلای پرشیا",
+                "code": "FP",
+                "status": null
+            },
+            "flight_number": "7438",
+            "flight_key": "d833bdbc-9dd8-4fd7-9800-b0210b14a1dd",
+            "capacity": 8,
+            "class": "Y",
+            "price": 3635972,
+            "price_details": {
+                "adult": {
+                    "price": 3635972
+                },
+                "child": {
+                    "price": 3659590
+                },
+                "infant": {
+                    "price": 330900
+                }
+            },
+            "cabin_type": {
+                "fa_cabin": "اکونومی",
+                "cabin": "economy"
+            },
+            "allowed_baggage": {
+                "adl_bag": 20,
+                "chd_bag": 20,
+                "inf_bag": 0
+            },
+            "refund_rules": null,
+            "plane_name": "M82",
+            "is_foreign": null,
+            "status": 1
+        },
+        "round": null
+    }
+}
