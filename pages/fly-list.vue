@@ -1,20 +1,20 @@
 <template>
-    <div class="">
+    <div class="bg-white">
         <div v-for="(flightsStore,index) in flightsStores"
             class=" flex justify-center"
         >
             <FlyCard
                 :key="index"
                 :price="flightsStore.flights.trip.price"
-                :airline_name="flightsStore.flights.trip.airline.fa_name"
-                :cabin_type="flightsStore.flights.trip.cabin_type.fa_cabin"
-                :destination="flightsStore.flights.trip.destination.fa_name"
-                :origin="flightsStore.flights.trip.origin.fa_name"
+                :airline="flightsStore.flights.trip.airline"
+                :cabin_type="flightsStore.flights.trip.cabin_type"
+                :destination="flightsStore.flights.trip.destination"
+                :origin="flightsStore.flights.trip.origin"
                 :arrive_time="flightsStore.flights.trip.arrive_time"
+                :time="flightsStore.flights.trip.time"
                 :plane_name="flightsStore.flights.trip.plane_name"
-                :fly_time="flightsStore.flights.trip.time"
                 :capacity="flightsStore.flights.trip.capacity"
-                :type="flightsStore.flights.trip.type.fa_name"
+                :type="flightsStore.flights.trip.type"
             />
         </div>
 

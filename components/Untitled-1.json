@@ -1,5 +1,5 @@
 {
-    "price": 7271950,
+    "price": 7680920,
     "flights": {
         "trip": {
             "origin": {
@@ -36,19 +36,19 @@
                 "status": null
             },
             "flight_number": "7438",
-            "flight_key": "d833bdbc-9dd8-4fd7-9800-b0210b14a1dd",
-            "capacity": 8,
-            "class": "Y",
-            "price": 3635972,
+            "flight_key": "8a8f6b8d-e663-415e-a784-44ce99539515",
+            "capacity": 5,
+            "class": "W",
+            "price": 3840460,
             "price_details": {
                 "adult": {
-                    "price": 3635972
+                    "price": 3840460
                 },
                 "child": {
-                    "price": 3659590
+                    "price": 3865075
                 },
                 "infant": {
-                    "price": 330900
+                    "price": 275750
                 }
             },
             "cabin_type": {

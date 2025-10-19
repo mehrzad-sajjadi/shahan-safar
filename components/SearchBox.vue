@@ -12,7 +12,7 @@
                     >
                         <Tackeoff class="absolute top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                     </CityInput>
-                    <p v-if="errors.origin" class="text-red-500 text-xs mt-1">پر کردن این فیلد اجباری است</p>
+                    <p v-if="errors.origin" class="text-red-500 text-xs mt-1">لطفا مبدا را وارد کنید</p>
                 </div>
 
                 <!-- مقصد -->
@@ -25,7 +25,7 @@
                     >
                         <landing class="absolute top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                     </CityInput>
-                    <p v-if="errors.destination" class="text-red-500 text-xs mt-1">پر کردن این فیلد اجباری است</p>
+                    <p v-if="errors.destination" class="text-red-500 text-xs mt-1"> لطفا مقصد را وارد کنید</p>
                 </div>
 
                 <!-- تاریخ -->
@@ -41,7 +41,6 @@
                     <p v-if="errors.date" class="text-red-500 text-xs mt-1">پر کردن این فیلد اجباری است</p>
                 </div>
 
-                <!-- مسافران (بدون ارور اجباری) -->
                 <PassengersInput @change="updatePassengers" />
 
                 <button type="submit" class="cursor-pointer h-full bg-amber-400 px-4 py-2 rounded">جستجو</button>
@@ -158,8 +157,9 @@ function validate() {
 const fetchFlights = async () => {
     result.value = null;
 
-    // اگر اعتبارسنجی رد شد، API صدا نزن
-    if (!validate()) return;
+    if (!validate()){
+        return
+    } ;
 
     try {
         const res = await $fetch('/api/flights/list', {
